@@ -1,11 +1,11 @@
-import { Home } from "../src/pages/Home/Home";
-import { Landing } from "../src/pages/Landing/Landing";
+import Login from "./pages/Landing/Login";
 
 export const App = () => {
   return (
     <>
-      <Home />
-      <Landing />
+      {/* <Landing /> */}
+
+      <Login />
     </>
   );
 };
