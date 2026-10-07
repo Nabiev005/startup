@@ -1,3 +1,8 @@
+import { useEffect, useRef } from "react";
+import type { CSSProperties } from "react";
+import { Link } from "react-router-dom";
+import styled, { css, keyframes } from "styled-components";
+
 const pains = [
   {
     t: "Айлык дептерге эсептелет",
@@ -215,25 +220,37 @@ const faq = [
   },
 ];
 
-const wrap = "mx-auto max-w-[1232px] px-4";
-const eyebrow =
-  "mb-3.5 text-[13px] font-semibold uppercase tracking-wide text-brand";
-const h2 =
-  "max-w-[720px] text-[28px] font-bold leading-tight tracking-tight sm:text-[38px]";
-const lead = "mt-3.5 max-w-[720px] text-[17px] text-muted";
-const card = "rounded-[14px] border border-line bg-white";
-const btn =
-  "inline-flex h-[46px] items-center justify-center rounded-lg border-[1.5px] border-ink bg-white px-5 text-[15px] font-semibold text-ink";
-const btnBlue =
-  "inline-flex h-[46px] items-center justify-center rounded-lg border-[1.5px] border-brand bg-brand px-5 text-[15px] font-semibold text-white";
+const delay = (i: number) => ({ "--d": `${i * 80}ms` }) as CSSProperties;
 
 export const Landing = () => {
+  const pageRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const items = pageRef.current?.querySelectorAll("[data-reveal]");
+    if (!items) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -40px 0px" },
+    );
+
+    items.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="bg-white font-sans leading-normal text-ink">
-      <header className="sticky top-0 z-10 border-b border-line bg-white">
-        <div className={`${wrap} flex h-[72px] items-center gap-7`}>
-          <a href="#" className="flex items-center gap-2.5 text-lg font-bold">
-            <span className="grid size-9 place-items-center rounded-lg bg-brand">
+    <Page ref={pageRef}>
+      <Header>
+        <NavBar>
+          <Logo to="/">
+            <LogoIcon>
               <svg
                 width="18"
                 height="18"
@@ -247,342 +264,262 @@ export const Landing = () => {
                 <circle cx="18" cy="6" r="2.4" />
                 <path d="M6 13 l3 3" />
               </svg>
-            </span>
+            </LogoIcon>
             ТигүүERP
-          </a>
-          <nav className="ml-7 hidden gap-7 text-[15px] text-muted lg:flex">
-            <a href="#" className="font-semibold text-ink">
-              Башкы бет
-            </a>
+          </Logo>
+          <Menu>
+            <a href="#">Башкы бет</a>
             <a href="#features">Мүмкүнчүлүктөр</a>
             <a href="#how">Кантип иштейт</a>
             <a href="#pricing">Тарифтер</a>
             <a href="#about">Биз жөнүндө</a>
             <a href="#contact">Байланыш</a>
-          </nav>
-          <div className="ml-auto flex items-center gap-2.5">
-            <span className="hidden h-10 items-center rounded-lg border border-line px-3 text-[13px] sm:flex">
-              KG / RU
-            </span>
-            <a
-              href="#"
-              className={`${btn} hidden h-11 border-line px-4 sm:inline-flex`}
-            >
-              Кирүү
-            </a>
-            <a href="#contact" className={`${btnBlue} h-11 px-4`}>
+          </Menu>
+          <NavRight>
+            <HideMobile>
+              <Lang>KG / RU</Lang>
+              <NavButton to="/login">Кирүү</NavButton>
+            </HideMobile>
+            <NavButton to="/login" $primary>
               Катталуу
-            </a>
-          </div>
-        </div>
-      </header>
+            </NavButton>
+          </NavRight>
+        </NavBar>
+      </Header>
 
-      <section className="border-b border-line bg-paper pb-16 pt-18">
-        <div
-          className={`${wrap} grid items-center gap-12 lg:grid-cols-[1.1fr_1fr]`}
-        >
-          <div>
-            <span className="inline-block rounded-full bg-brand-soft px-3 py-1.5 text-[13px] font-semibold text-brand">
-              Тигүү цехтери үчүн ERP/MES · Кыргызстанда жасалган
-            </span>
-            <h1 className="mb-8 mt-7 text-4xl font-bold leading-[1.12] tracking-tight sm:text-[52px]">
-              Буйрутмадан айлыкка чейин — бүт цех бир системада
-            </h1>
-            <p className="max-w-[720px] text-lg text-muted">
+      <Hero>
+        <HeroGrid>
+          <HeroCopy>
+            <Pill>Тигүү цехтери үчүн ERP/MES · Кыргызстанда жасалган</Pill>
+            <h1>Буйрутмадан айлыкка чейин — бүт цех бир системада</h1>
+            <HeroText>
               Тигүүчүлөр телефон менен QR-кодду сканерлешет. Сдельный эмгек акы,
               буйрутманын абалы жана кездеменин чыгымы өзү эсептелет — дептер
               жана Excel кереги жок.
-            </p>
-            <div className="my-7 flex flex-wrap gap-3">
-              <a href="#contact" className={`${btnBlue} h-14 px-6 text-base`}>
+            </HeroText>
+            <HeroButtons>
+              <Button href="#contact" $primary $big>
                 Акысыз сынап көрүү
-              </a>
-              <a href="#contact" className={`${btn} h-14 px-6 text-base`}>
+              </Button>
+              <Button href="#contact" $big>
                 Демо көрсөтүүгө жазылуу
-              </a>
-            </div>
-            <div className="flex max-w-[460px] flex-wrap gap-x-5 gap-y-3.5 text-[13px] text-muted">
+              </Button>
+            </HeroButtons>
+            <HeroMeta>
               <span>10–200 кызматкери бар цехтер үчүн</span>
               <span>Кыргызча жана орусча</span>
               <span>Арзан Android телефондордо иштейт</span>
-            </div>
-          </div>
+            </HeroMeta>
+          </HeroCopy>
 
-          <div className="flex flex-wrap items-center gap-4 lg:flex-nowrap lg:justify-end">
-            <div className={`${card} w-full px-5 py-[22px] sm:w-80`}>
-              <div className="flex justify-between text-xs text-muted">
+          <HeroVisual>
+            <Bundle>
+              <BundleTop>
                 <span>Б-0142 · Эркектер көйнөгү</span>
-                <b className="text-brand">Тигүүдө</b>
-              </div>
-              <div className="mb-5 mt-[18px] text-[38px] font-bold">48%</div>
-              <div className="mb-5 h-2 overflow-hidden rounded bg-paper">
-                <span className="block h-full w-[48%] bg-brand" />
-              </div>
-              <div className="flex justify-between py-1 text-[13px]">
+                <b>Тигүүдө</b>
+              </BundleTop>
+              <Percent>48%</Percent>
+              <Bar>
+                <span />
+              </Bar>
+              <Row>
                 <span>Ийинди бириктирүү</span>
-                <span className="font-mono">57/60</span>
-              </div>
-              <div className="flex justify-between py-1 text-[13px]">
+                <Mono>57/60</Mono>
+              </Row>
+              <Row>
                 <span>Жеңди бекитүү</span>
-                <span className="font-mono">48/60</span>
-              </div>
-              <div className="flex justify-between py-1 text-[13px] font-semibold text-red-700">
+                <Mono>48/60</Mono>
+              </Row>
+              <Row $alert>
                 <span>Жака тигүү · тыгын</span>
-                <span className="font-mono">20/60</span>
-              </div>
-            </div>
-            <div className="flex h-[360px] w-full flex-col rounded-[26px] border-[10px] border-ink bg-white px-3.5 py-4 sm:w-[220px]">
-              <small className="text-[11px] text-muted">Бүгүн тапканыңыз</small>
-              <div className="mt-2 font-mono text-[22px] font-semibold">
-                1 240 сом
-              </div>
-              <div className="mx-auto my-[22px] grid size-[132px] place-items-center rounded-full bg-brand text-[15px] font-bold text-white ring-8 ring-brand-soft">
-                Сканерлөө
-              </div>
-              <div className="mt-auto rounded-md bg-green-50 px-2.5 py-2 text-center text-[11px] font-semibold text-green-700">
-                Жака тигүү × 20 = 160 сом
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+                <Mono>20/60</Mono>
+              </Row>
+            </Bundle>
+            <Phone>
+              <small>Бүгүн тапканыңыз</small>
+              <Earned>1 240 сом</Earned>
+              <ScanButton>Сканерлөө</ScanButton>
+              <Toast>Жака тигүү × 20 = 160 сом</Toast>
+            </Phone>
+          </HeroVisual>
+        </HeroGrid>
+      </Hero>
 
-      <section className="py-16 sm:py-22">
-        <div className={wrap}>
-          <div className={eyebrow}>Кандай маселени чечет</div>
-          <h2 className={h2}>Бул көйгөйлөр сизге тааныштырбы?</h2>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <Section>
+        <Wrap>
+          <Eyebrow data-reveal>Кандай маселени чечет</Eyebrow>
+          <Title data-reveal>Бул көйгөйлөр сизге тааныштырбы?</Title>
+          <Grid $cols={4} $tablet={2}>
             {pains.map((p, i) => (
-              <div className={`${card} px-6 py-[26px]`} key={p.t}>
-                <div className="font-mono text-[15px] font-semibold text-red-700">
-                  0{i + 1}
-                </div>
-                <h3 className="mb-3.5 mt-[18px] text-[19px] font-semibold leading-snug">
-                  {p.t}
-                </h3>
-                <p className="border-b border-line pb-3.5 text-[15px] text-muted">
-                  {p.d}
-                </p>
-                <p className="pt-3.5 text-[15px] font-semibold">{p.f}</p>
-              </div>
+              <PainCard key={p.t} data-reveal style={delay(i)}>
+                <PainNum>0{i + 1}</PainNum>
+                <h3>{p.t}</h3>
+                <p>{p.d}</p>
+                <strong>{p.f}</strong>
+              </PainCard>
             ))}
-          </div>
-        </div>
-      </section>
+          </Grid>
+        </Wrap>
+      </Section>
 
-      <section id="how" className="bg-paper py-16 sm:py-22">
-        <div className={wrap}>
-          <div className={eyebrow}>Кантип иштейт</div>
-          <h2 className={h2}>Бир скан — айлык да, буйрутманын абалы да</h2>
-          <p className={lead}>
+      <Section id="how" $bg="light">
+        <Wrap>
+          <Eyebrow data-reveal>Кантип иштейт</Eyebrow>
+          <Title data-reveal>Бир скан — айлык да, буйрутманын абалы да</Title>
+          <Lead data-reveal>
             Системанын өзөгү жөнөкөй цикл. Тигүүчү операцияны бүтүрүп, пачканын
             QR-кодун сканерлейт — калганын система өзү эсептейт.
-          </p>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {steps.map((s, i) => {
-              const active = i === 3;
-              const num = active
-                ? "bg-white text-brand"
-                : i === 4
-                  ? "bg-green-700 text-white"
-                  : "bg-ink text-white";
-              return (
-                <div
-                  key={s.t}
-                  className={`min-h-[226px] rounded-[14px] border p-[22px] ${active ? "border-brand bg-brand text-white" : "border-line bg-white"}`}
-                >
-                  <span
-                    className={`grid size-10 place-items-center rounded-lg text-[15px] font-bold ${num}`}
-                  >
-                    {i + 1}
-                  </span>
-                  <h3 className="mb-2.5 mt-4 text-[17px] font-semibold leading-snug">
-                    {s.t}
-                  </h3>
-                  <p
-                    className={`text-sm ${active ? "font-medium text-indigo-100" : "text-muted"}`}
-                  >
-                    {s.d}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section id="features" className="bg-ink py-16 text-white sm:py-22">
-        <div className={wrap}>
-          <div className={`${eyebrow} text-indigo-300`}>Мүмкүнчүлүктөр</div>
-          <h2 className={h2}>Цехке керектүүнүн баары — 10 модулда</h2>
-          <div className="mt-10 grid overflow-hidden rounded-[14px] border border-zinc-800 bg-zinc-700 sm:grid-cols-2 lg:grid-cols-4">
-            {modules.map((m) => (
-              <div
-                className="border-b border-r border-zinc-800 bg-ink px-6 py-[26px]"
-                key={m.t}
+          </Lead>
+          <Grid $cols={5} $tablet={2}>
+            {steps.map((s, i) => (
+              <Step
+                key={s.t}
+                $active={i === 3}
+                data-reveal
+                style={delay(i)}
               >
-                <h3 className="mb-2.5 text-[17px] font-bold">{m.t}</h3>
-                <p className="text-sm text-zinc-300">{m.d}</p>
-              </div>
+                <StepNum $active={i === 3}>{i + 1}</StepNum>
+                <h3>{s.t}</h3>
+                <p>{s.d}</p>
+              </Step>
             ))}
-          </div>
-        </div>
-      </section>
+          </Grid>
+        </Wrap>
+      </Section>
 
-      <section className="bg-paper py-16 sm:py-22">
-        <div className={wrap}>
-          <div className={eyebrow}>Эмне үчүн колдонуу керек</div>
-          <h2 className={h2}>Ар бир кызматкер өзүнө керектүүнү гана көрөт</h2>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {roles.map((r) => (
-              <div className={`${card} px-6 py-[26px]`} key={r.t}>
-                <h3 className="mb-2.5 text-lg font-semibold">{r.t}</h3>
-                <p className="text-[15px] text-muted">{r.d}</p>
-              </div>
+      <Section id="features" $bg="accent">
+        <Wrap>
+          <Eyebrow data-reveal $light>
+            Мүмкүнчүлүктөр
+          </Eyebrow>
+          <Title data-reveal>Цехке керектүүнүн баары — 10 модулда</Title>
+          <Grid $cols={4} $tablet={2}>
+            {modules.map((m, i) => (
+              <Module key={m.t} data-reveal style={delay(i % 4)}>
+                <h3>{m.t}</h3>
+                <p>{m.d}</p>
+              </Module>
             ))}
-          </div>
-        </div>
-      </section>
+          </Grid>
+        </Wrap>
+      </Section>
 
-      <div className="bg-brand-soft py-18">
-        <div className={`${wrap} grid gap-6 sm:grid-cols-2 lg:grid-cols-5`}>
-          {stats.map((s) => (
-            <div key={s.v}>
-              <b className="block font-mono text-[38px] font-semibold leading-tight text-[#1f3a9e]">
-                {s.v}
-              </b>
-              <span className="mt-2 block text-[15px] text-muted">{s.l}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <Section>
+        <Wrap>
+          <Eyebrow data-reveal>Эмне үчүн колдонуу керек</Eyebrow>
+          <Title data-reveal>Ар бир кызматкер өзүнө керектүүнү гана көрөт</Title>
+          <Grid $cols={3} $tablet={2}>
+            {roles.map((r, i) => (
+              <RoleCard key={r.t} data-reveal style={delay(i % 3)}>
+                <h3>{r.t}</h3>
+                <p>{r.d}</p>
+              </RoleCard>
+            ))}
+          </Grid>
+        </Wrap>
+      </Section>
 
-      <section className="bg-paper py-16 sm:py-22">
-        <div className={wrap}>
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div className={`${card} p-8`}>
-              <h3 className="mb-3.5 text-[27px] font-semibold leading-tight">
-                Техникалык билими жок адамдар үчүн
-              </h3>
+      <Section $bg="soft">
+        <Wrap>
+          <Grid $cols={5} $tablet={2} $gap={24} $flush>
+            {stats.map((s, i) => (
+              <Stat key={s.v} data-reveal style={delay(i)}>
+                <b>{s.v}</b>
+                <span>{s.l}</span>
+              </Stat>
+            ))}
+          </Grid>
+        </Wrap>
+      </Section>
+
+      <Section>
+        <Wrap>
+          <Grid $cols={2} $gap={24} $flush>
+            <TrustCard data-reveal>
+              <h3>Техникалык билими жок адамдар үчүн</h3>
               <ul>
                 {easy.map((x) => (
-                  <li
-                    key={x}
-                    className="my-2.5 flex gap-2.5 text-[15px] text-zinc-700"
-                  >
-                    <span className="font-bold text-green-700">✓</span>
+                  <li key={x}>
+                    <Check>✓</Check>
                     {x}
                   </li>
                 ))}
               </ul>
-            </div>
-            <div className={`${card} p-8`}>
-              <h3 className="mb-3.5 text-[27px] font-semibold leading-tight">
-                Маалыматыңыз коопсуз
-              </h3>
+            </TrustCard>
+            <TrustCard data-reveal style={delay(1)}>
+              <h3>Маалыматыңыз коопсуз</h3>
               <ul>
                 {secure.map((x) => (
-                  <li
-                    key={x}
-                    className="my-2.5 flex gap-2.5 text-[15px] text-zinc-700"
-                  >
-                    <span className="mt-2 size-1.5 shrink-0 rounded-full bg-brand" />
+                  <li key={x}>
+                    <Dot />
                     {x}
                   </li>
                 ))}
               </ul>
-            </div>
-          </div>
+            </TrustCard>
+          </Grid>
 
-          <h3 className="mb-[22px] mt-24 text-[26px] font-semibold">
-            Сиз колдонгон куралдар менен иштейт
-          </h3>
-          <div className="flex flex-wrap gap-2.5">
+          <ToolsTitle data-reveal>Сиз колдонгон куралдар менен иштейт</ToolsTitle>
+          <Chips data-reveal>
             {tools.map((t) => (
-              <span
-                key={t}
-                className="rounded-full border border-line bg-white px-4 py-2.5 text-[15px] font-medium"
-              >
-                {t}
-              </span>
+              <Chip key={t}>{t}</Chip>
             ))}
             {soon.map((t) => (
-              <span
-                key={t}
-                className="rounded-full border border-dashed border-line px-4 py-2.5 text-[15px] text-muted"
-              >
+              <Chip key={t} $soon>
                 {t}
-              </span>
+              </Chip>
             ))}
-          </div>
-        </div>
-      </section>
+          </Chips>
+        </Wrap>
+      </Section>
 
-      <section id="pricing" className="py-16 sm:py-22">
-        <div className={wrap}>
-          <div className={eyebrow}>Тарифтер</div>
-          <h2 className={h2}>Цехиңиздин көлөмүнө жараша</h2>
-          <p className={lead}>
+      <Section id="pricing" $bg="light">
+        <Wrap>
+          <Eyebrow data-reveal>Тарифтер</Eyebrow>
+          <Title data-reveal>Цехиңиздин көлөмүнө жараша</Title>
+          <Lead data-reveal>
             Ар бир тарифке бекер онлайн окутуу жана баштапкы толтурууга жардам
             кирет.
-          </p>
-          <div className="mt-10 grid gap-4 lg:grid-cols-3">
-            {plans.map((p) => (
-              <div
+          </Lead>
+          <Grid $cols={3}>
+            {plans.map((p, i) => (
+              <PriceCard
                 key={p.t}
-                className={`flex flex-col rounded-[14px] bg-white px-7 py-[30px] ${p.hl ? "border-2 border-brand" : "border border-line"}`}
+                $highlight={p.hl}
+                data-reveal
+                style={delay(i)}
               >
-                <div className="flex items-center justify-between">
-                  <h3 className="text-[21px] font-semibold">{p.t}</h3>
-                  {p.hl && (
-                    <span className="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand">
-                      Сунушталат
-                    </span>
-                  )}
-                </div>
-                <div className="mb-[22px] mt-[18px] text-[15px] text-muted">
-                  {p.who}
-                </div>
-                <div className="font-mono text-[32px] font-semibold">
+                <PriceTop>
+                  <h3>{p.t}</h3>
+                  {p.hl && <Badge>Сунушталат</Badge>}
+                </PriceTop>
+                <Who>{p.who}</Who>
+                <Amount>
                   {p.amt}
-                  {p.per && (
-                    <small className="ml-5 text-[15px] text-muted">
-                      сом/ай
-                    </small>
-                  )}
-                </div>
-                <ul className="my-[22px] flex-1 list-disc pl-[18px] text-[15px] text-zinc-700">
+                  {p.per && <small>сом/ай</small>}
+                </Amount>
+                <ul>
                   {p.items.map((x) => (
-                    <li key={x} className="my-1.5">
-                      {x}
-                    </li>
+                    <li key={x}>{x}</li>
                   ))}
                 </ul>
-                <a
-                  href="#contact"
-                  className={`${p.hl ? btnBlue : btn} h-[50px] w-full`}
-                >
+                <Button href="#contact" $primary={p.hl} $block>
                   {p.btn}
-                </a>
-              </div>
+                </Button>
+              </PriceCard>
             ))}
-          </div>
-        </div>
-      </section>
+          </Grid>
+        </Wrap>
+      </Section>
 
-      <section
-        id="about"
-        className="border-t border-line bg-paper py-16 sm:py-22"
-      >
-        <div className={wrap}>
-          <div className="grid gap-12 lg:grid-cols-2">
-            <div>
-              <div className={eyebrow}>Биз жөнүндө</div>
-              <h2 className={h2}>
-                Кыргызстандын жеңил өнөр жайы үчүн жасалган
-              </h2>
+      <Section id="about">
+        <Wrap>
+          <Grid $cols={2} $gap={48} $flush>
+            <div data-reveal>
+              <Eyebrow>Биз жөнүндө</Eyebrow>
+              <Title>Кыргызстандын жеңил өнөр жайы үчүн жасалган</Title>
             </div>
-            <div className="space-y-4 text-base text-muted">
+            <AboutText data-reveal style={delay(1)}>
               <p>
                 ТигүүERP — тигүү цехтери, трикотаж жана текстиль фабрикалары,
                 буйрутма менен иштеген ательелер үчүн булут кызматы. Системаны
@@ -597,143 +534,1224 @@ export const Landing = () => {
                 Колдоо кызматы Telegram аркылуу, иш күндөрү 8:00–20:00. Маанилүү
                 каталарга 4 сааттын ичинде жооп беребиз.
               </p>
-            </div>
-          </div>
+            </AboutText>
+          </Grid>
 
-          <h3 className="mb-6 mt-20 text-[32px] font-semibold">
-            Көп берилүүчү суроолор
-          </h3>
+          <FaqTitle data-reveal>Көп берилүүчү суроолор</FaqTitle>
           {faq.map((f, i) => (
-            <details
-              key={f.q}
-              open={i === 0}
-              className="group mb-2.5 rounded-xl border border-line bg-white px-[22px] py-5"
-            >
-              <summary className="cursor-pointer list-none text-[17px] font-semibold [&::-webkit-details-marker]:hidden">
-                <span className="mr-2 inline-block text-xs group-open:hidden">
-                  ▶
-                </span>
-                <span className="mr-2 hidden text-xs group-open:inline-block">
-                  ▼
-                </span>
-                {f.q}
-              </summary>
-              <p className="mt-3 text-[15px] text-muted">{f.a}</p>
-            </details>
+            <FaqItem key={f.q} open={i === 0} data-reveal style={delay(i)}>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </FaqItem>
           ))}
-        </div>
-      </section>
+        </Wrap>
+      </Section>
 
-      <div id="contact" className="bg-brand py-18 text-white">
-        <div className={`${wrap} grid gap-14 lg:grid-cols-2`}>
-          <div>
-            <h2 className="text-[28px] font-bold leading-tight sm:text-[40px]">
-              Цехиңизде көрсөтүп берели
-            </h2>
-            <p className="mb-7 mt-4 text-lg font-medium text-indigo-100">
-              Өтүнмө калтырыңыз — биз байланышып, системаны сиздин моделдериңиз
-              менен көрсөтөбүз жана пилотко даярдайбыз.
-            </p>
-            <div className="space-y-2 text-[15px] font-medium text-indigo-100">
-              <p>Телефон: [ТЕЛЕФОН]</p>
-              <p>Telegram: [@КОЛДОО]</p>
-              <p>Дарек: [ДАРЕК], Бишкек</p>
-            </div>
-          </div>
-          <form
-            className="rounded-2xl bg-white p-7 text-ink"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <label
-              htmlFor="lp-name"
-              className="mb-2 block text-[13px] font-medium"
-            >
-              Атыңыз
-            </label>
-            <input
-              id="lp-name"
-              placeholder="Айбек"
-              className="mb-[18px] h-[50px] w-full rounded-lg border border-line px-3.5 text-base"
-            />
-            <label
-              htmlFor="lp-phone"
-              className="mb-2 block text-[13px] font-medium"
-            >
-              Телефон
-            </label>
-            <input
-              id="lp-phone"
-              type="tel"
-              placeholder="+996"
-              className="mb-[18px] h-[50px] w-full rounded-lg border border-line px-3.5 text-base"
-            />
-            <label
-              htmlFor="lp-size"
-              className="mb-2 block text-[13px] font-medium"
-            >
-              Цехте канча кызматкер бар?
-            </label>
-            <select
-              id="lp-size"
-              defaultValue="10–30"
-              className="mb-[18px] h-[50px] w-full rounded-lg border border-line bg-white px-3.5 text-base"
-            >
-              <option>10–30</option>
-              <option>30–100</option>
-              <option>100–200</option>
-              <option>200+</option>
-            </select>
-            <button
-              type="submit"
-              className="h-[52px] w-full cursor-pointer rounded-lg bg-ink text-base font-semibold text-white"
-            >
-              Өтүнмө жөнөтүү
-            </button>
-          </form>
-        </div>
-      </div>
-
-      <footer className="bg-ink pb-7 pt-14 text-white">
-        <div className={wrap}>
-          <div className="flex flex-wrap justify-between gap-8">
-            <div>
-              <b className="text-lg">ТигүүERP</b>
-              <p className="mt-3 max-w-80 text-sm text-zinc-300">
-                Тигүү ишканалары үчүн өндүрүштү башкаруу системасы
+      <Section id="contact" $bg="accent">
+        <Wrap>
+          <Grid $cols={2} $gap={56} $flush>
+            <Cta data-reveal>
+              <h2>Цехиңизде көрсөтүп берели</h2>
+              <p>
+                Өтүнмө калтырыңыз — биз байланышып, системаны сиздин
+                моделдериңиз менен көрсөтөбүз жана пилотко даярдайбыз.
               </p>
+              <Contacts>
+                <span>Телефон: [ТЕЛЕФОН]</span>
+                <span>Telegram: [@КОЛДОО]</span>
+                <span>Дарек: [ДАРЕК], Бишкек</span>
+              </Contacts>
+            </Cta>
+            <Form
+              onSubmit={(e) => e.preventDefault()}
+              data-reveal
+              style={delay(1)}
+            >
+              <label htmlFor="lp-name">Атыңыз</label>
+              <input id="lp-name" placeholder="Айбек" />
+              <label htmlFor="lp-phone">Телефон</label>
+              <input id="lp-phone" type="tel" placeholder="+996" />
+              <label htmlFor="lp-size">Цехте канча кызматкер бар?</label>
+              <select id="lp-size" defaultValue="10–30">
+                <option>10–30</option>
+                <option>30–100</option>
+                <option>100–200</option>
+                <option>200+</option>
+              </select>
+              <button type="submit">Өтүнмө жөнөтүү</button>
+            </Form>
+          </Grid>
+        </Wrap>
+      </Section>
+
+      <Footer>
+        <Wrap>
+          <FooterTop>
+            <div>
+              <b>ТигүүERP</b>
+              <p>Тигүү ишканалары үчүн өндүрүштү башкаруу системасы</p>
             </div>
-            <div className="flex gap-12 text-[15px]">
-              <div className="flex flex-col gap-2">
-                <h4 className="mb-1 font-semibold">Продукт</h4>
-                <a href="#features" className="text-zinc-300">
-                  Мүмкүнчүлүктөр
-                </a>
-                <a href="#pricing" className="text-zinc-300">
-                  Тарифтер
-                </a>
-                <a href="#" className="text-zinc-300">
-                  Кирүү
-                </a>
+            <FooterCols>
+              <div>
+                <h4>Продукт</h4>
+                <a href="#features">Мүмкүнчүлүктөр</a>
+                <a href="#pricing">Тарифтер</a>
+                <Link to="/login">Кирүү</Link>
               </div>
-              <div className="flex flex-col gap-2">
-                <h4 className="mb-1 font-semibold">Компания</h4>
-                <a href="#about" className="text-zinc-300">
-                  Биз жөнүндө
-                </a>
-                <a href="#contact" className="text-zinc-300">
-                  Байланыш
-                </a>
-                <a href="#" className="text-zinc-300">
-                  Купуялык саясаты
-                </a>
+              <div>
+                <h4>Компания</h4>
+                <a href="#about">Биз жөнүндө</a>
+                <a href="#contact">Байланыш</a>
+                <a href="#">Купуялык саясаты</a>
               </div>
-            </div>
-          </div>
-          <div className="mt-12 border-t border-zinc-800 pt-[22px] text-[13px] text-zinc-500">
-            © 2026 ТигүүERP · Бишкек
-          </div>
-        </div>
-      </footer>
-    </div>
+            </FooterCols>
+          </FooterTop>
+          <Copy>© 2026 ТигүүERP · Бишкек</Copy>
+        </Wrap>
+      </Footer>
+    </Page>
   );
 };
+
+/* ================= Стилдер ================= */
+
+const colors = {
+  text: "#0f1e47",
+  muted: "#5a6785",
+  light: "#f5f8ff",
+  accent: "#2563eb",
+  accentHover: "#1d4ed8",
+  accentSoft: "#e8f0ff",
+  accentDeep: "#1e3a8a",
+  border: "#dfe7f6",
+  danger: "#dc2626",
+};
+
+const mono = '"IBM Plex Mono", monospace';
+const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
+
+/* ---------- Animations ---------- */
+const fadeUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const float = keyframes`
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+`;
+
+const pulse = keyframes`
+  0% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 22px rgba(37, 99, 235, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+  }
+`;
+
+const grow = keyframes`
+  from {
+    width: 0;
+  }
+  to {
+    width: 48%;
+  }
+`;
+
+const pop = keyframes`
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+`;
+
+const cardHover = css`
+  transition:
+    transform 0.3s ${ease},
+    box-shadow 0.3s ${ease},
+    border-color 0.3s ${ease};
+
+  &:hover {
+    transform: translateY(-6px);
+    border-color: #bcd0f7;
+    box-shadow: 0 18px 40px -18px rgba(37, 99, 235, 0.35);
+  }
+`;
+
+/* ---------- Layout ---------- */
+const Page = styled.div`
+  background: #fff;
+  color: ${colors.text};
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  [data-reveal] {
+    opacity: 0;
+    translate: 0 28px;
+    transition:
+      opacity 0.7s ${ease} var(--d, 0ms),
+      translate 0.7s ${ease} var(--d, 0ms),
+      transform 0.3s ${ease},
+      box-shadow 0.3s ${ease},
+      border-color 0.3s ${ease},
+      background 0.3s ${ease};
+  }
+
+  [data-reveal].is-visible {
+    opacity: 1;
+    translate: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+
+    [data-reveal] {
+      opacity: 1;
+      translate: none;
+    }
+  }
+`;
+
+const Wrap = styled.div`
+  max-width: 1232px;
+  margin: 0 auto;
+  padding: 0 16px;
+`;
+
+const sectionBg = {
+  white: { bg: "#fff", fg: "inherit" },
+  light: { bg: colors.light, fg: "inherit" },
+  soft: { bg: colors.accentSoft, fg: "inherit" },
+  accent: {
+    bg: `linear-gradient(135deg, ${colors.accent} 0%, ${colors.accentDeep} 100%)`,
+    fg: "#fff",
+  },
+};
+
+const Section = styled.section<{ $bg?: keyof typeof sectionBg }>`
+  padding: 88px 0;
+  background: ${({ $bg = "white" }) => sectionBg[$bg].bg};
+  color: ${({ $bg = "white" }) => sectionBg[$bg].fg};
+  scroll-margin-top: 72px;
+
+  @media (max-width: 639px) {
+    padding: 64px 0;
+  }
+`;
+
+const Grid = styled.div<{
+  $cols: number;
+  $tablet?: number;
+  $gap?: number;
+  $flush?: boolean;
+}>`
+  display: grid;
+  grid-template-columns: repeat(${({ $cols }) => $cols}, 1fr);
+  gap: ${({ $gap = 16 }) => $gap}px;
+  margin-top: ${({ $flush }) => ($flush ? 0 : 40)}px;
+
+  @media (max-width: 1023px) {
+    grid-template-columns: repeat(${({ $tablet = 1 }) => $tablet}, 1fr);
+  }
+
+  @media (max-width: 639px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const Card = styled.div`
+  border: 1px solid ${colors.border};
+  border-radius: 16px;
+  background: #fff;
+`;
+
+/* ---------- Typography ---------- */
+const Eyebrow = styled.div<{ $light?: boolean }>`
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: ${({ $light }) => ($light ? "#bfd4ff" : colors.accent)};
+`;
+
+const Title = styled.h2`
+  max-width: 720px;
+  margin: 0;
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+
+  @media (max-width: 639px) {
+    font-size: 28px;
+  }
+`;
+
+const Lead = styled.p`
+  max-width: 720px;
+  margin: 14px 0 0;
+  font-size: 17px;
+  color: ${colors.muted};
+`;
+
+const Mono = styled.span`
+  font-family: ${mono};
+`;
+
+/* ---------- Buttons ---------- */
+const buttonBase = css`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 20px;
+  border: 1.5px solid ${colors.accent};
+  border-radius: 10px;
+  background: #fff;
+  color: ${colors.accent};
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.25s ${ease},
+    box-shadow 0.25s ${ease},
+    background 0.25s ${ease},
+    color 0.25s ${ease};
+
+  &:hover {
+    transform: translateY(-2px);
+    background: ${colors.accentSoft};
+    box-shadow: 0 10px 24px -12px rgba(37, 99, 235, 0.5);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+const buttonPrimary = css`
+  background: ${colors.accent};
+  color: #fff;
+
+  &:hover {
+    background: ${colors.accentHover};
+  }
+`;
+
+const Button = styled.a<{
+  $primary?: boolean;
+  $big?: boolean;
+  $block?: boolean;
+}>`
+  ${buttonBase}
+  ${({ $primary }) => $primary && buttonPrimary}
+
+  ${({ $big }) =>
+    $big &&
+    css`
+      height: 56px;
+      padding: 0 24px;
+      font-size: 16px;
+    `}
+
+  ${({ $block }) =>
+    $block &&
+    css`
+      width: 100%;
+      height: 50px;
+    `}
+`;
+
+const NavButton = styled(Link)<{ $primary?: boolean }>`
+  ${buttonBase}
+  height: 44px;
+  padding: 0 16px;
+  border-color: ${colors.border};
+  color: ${colors.text};
+  ${({ $primary }) => $primary && buttonPrimary}
+`;
+
+/* ---------- Header ---------- */
+const Header = styled.header`
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid ${colors.border};
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  animation: ${fadeUp} 0.6s ${ease} both;
+`;
+
+const NavBar = styled(Wrap)`
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 72px;
+`;
+
+const Logo = styled(Link)`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+`;
+
+const LogoIcon = styled.span`
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, ${colors.accent}, ${colors.accentDeep});
+  transition: transform 0.4s ${ease};
+
+  ${Logo}:hover & {
+    transform: rotate(-12deg) scale(1.08);
+  }
+`;
+
+const Menu = styled.nav`
+  display: flex;
+  gap: 28px;
+  margin-left: 28px;
+  font-size: 15px;
+  color: ${colors.muted};
+
+  a {
+    position: relative;
+    transition: color 0.2s;
+  }
+
+  a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 100%;
+    height: 2px;
+    border-radius: 2px;
+    background: ${colors.accent};
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ${ease};
+  }
+
+  a:hover,
+  a:first-child {
+    color: ${colors.accent};
+  }
+
+  a:hover::after {
+    transform: scaleX(1);
+  }
+
+  a:first-child {
+    font-weight: 600;
+  }
+
+  @media (max-width: 1023px) {
+    display: none;
+  }
+`;
+
+const NavRight = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+`;
+
+const HideMobile = styled.span`
+  display: contents;
+
+  @media (max-width: 639px) {
+    display: none;
+  }
+`;
+
+const Lang = styled.span`
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid ${colors.border};
+  border-radius: 10px;
+  font-size: 13px;
+  color: ${colors.muted};
+`;
+
+/* ---------- Hero ---------- */
+const Hero = styled.section`
+  position: relative;
+  overflow: hidden;
+  padding: 80px 0 72px;
+  background:
+    radial-gradient(
+      circle at 85% 20%,
+      rgba(37, 99, 235, 0.12),
+      transparent 45%
+    ),
+    linear-gradient(180deg, #fff 0%, ${colors.light} 100%);
+  border-bottom: 1px solid ${colors.border};
+`;
+
+const HeroGrid = styled(Wrap)`
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: 48px;
+
+  h1 {
+    margin: 28px 0 32px;
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+  }
+
+  @media (max-width: 1023px) {
+    grid-template-columns: 1fr;
+  }
+
+  @media (max-width: 639px) {
+    h1 {
+      font-size: 36px;
+    }
+  }
+`;
+
+const HeroCopy = styled.div`
+  > * {
+    animation: ${fadeUp} 0.8s ${ease} both;
+  }
+
+  > *:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+
+  > *:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+
+  > *:nth-child(4) {
+    animation-delay: 0.3s;
+  }
+
+  > *:nth-child(5) {
+    animation-delay: 0.4s;
+  }
+`;
+
+const Pill = styled.span`
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid #cfdcfb;
+  border-radius: 999px;
+  background: ${colors.accentSoft};
+  color: ${colors.accent};
+  font-size: 13px;
+  font-weight: 600;
+`;
+
+const HeroText = styled.p`
+  max-width: 720px;
+  margin: 0;
+  font-size: 18px;
+  color: ${colors.muted};
+`;
+
+const HeroButtons = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 28px 0;
+`;
+
+const HeroMeta = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 20px;
+  max-width: 460px;
+  font-size: 13px;
+  color: ${colors.muted};
+
+  span::before {
+    content: "✓ ";
+    color: ${colors.accent};
+    font-weight: 700;
+  }
+`;
+
+const HeroVisual = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  animation: ${fadeUp} 1s ${ease} 0.3s both;
+
+  @media (max-width: 1023px) {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+`;
+
+const Bundle = styled(Card)`
+  width: 320px;
+  padding: 22px 20px;
+  box-shadow: 0 24px 50px -24px rgba(30, 58, 138, 0.3);
+  animation: ${float} 6s ease-in-out infinite;
+
+  @media (max-width: 639px) {
+    width: 100%;
+  }
+`;
+
+const BundleTop = styled.div`
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: ${colors.muted};
+
+  b {
+    color: ${colors.accent};
+  }
+`;
+
+const Percent = styled.div`
+  margin: 18px 0 20px;
+  font-size: 38px;
+  font-weight: 700;
+`;
+
+const Bar = styled.div`
+  height: 8px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: ${colors.accentSoft};
+
+  span {
+    display: block;
+    width: 48%;
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #60a5fa, ${colors.accent});
+    animation: ${grow} 1.6s ${ease} 0.6s both;
+  }
+`;
+
+const Row = styled.div<{ $alert?: boolean }>`
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 13px;
+  font-weight: ${({ $alert }) => ($alert ? 600 : 400)};
+  color: ${({ $alert }) => ($alert ? colors.danger : "inherit")};
+`;
+
+const Phone = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 220px;
+  height: 360px;
+  padding: 16px 14px;
+  border: 10px solid ${colors.accentDeep};
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: 0 30px 60px -28px rgba(30, 58, 138, 0.5);
+  animation: ${float} 6s ease-in-out 1.5s infinite;
+
+  small {
+    font-size: 11px;
+    color: ${colors.muted};
+  }
+
+  @media (max-width: 639px) {
+    width: 100%;
+  }
+`;
+
+const Earned = styled.div`
+  margin-top: 8px;
+  font-family: ${mono};
+  font-size: 22px;
+  font-weight: 600;
+`;
+
+const ScanButton = styled.div`
+  display: grid;
+  place-items: center;
+  width: 132px;
+  height: 132px;
+  margin: 22px auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, ${colors.accentDeep});
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  animation: ${pulse} 2.2s ease-out infinite;
+`;
+
+const Toast = styled.div`
+  margin-top: auto;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: ${colors.accentSoft};
+  color: ${colors.accent};
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  animation: ${pop} 0.6s ${ease} 1.4s both;
+`;
+
+/* ---------- Pains ---------- */
+const PainCard = styled(Card)`
+  padding: 26px 24px;
+  ${cardHover}
+
+  h3 {
+    margin: 18px 0 14px;
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.375;
+  }
+
+  p {
+    margin: 0;
+    padding-bottom: 14px;
+    border-bottom: 1px solid ${colors.border};
+    font-size: 15px;
+    color: ${colors.muted};
+  }
+
+  strong {
+    display: block;
+    padding-top: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: ${colors.accent};
+  }
+`;
+
+const PainNum = styled.div`
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 32px;
+  border-radius: 8px;
+  background: ${colors.accentSoft};
+  color: ${colors.accent};
+  font-family: ${mono};
+  font-size: 14px;
+  font-weight: 600;
+`;
+
+/* ---------- Steps ---------- */
+const Step = styled.div<{ $active: boolean }>`
+  min-height: 226px;
+  padding: 22px;
+  border: 1px solid ${({ $active }) => ($active ? colors.accent : colors.border)};
+  border-radius: 16px;
+  background: ${({ $active }) =>
+    $active
+      ? `linear-gradient(160deg, ${colors.accent}, ${colors.accentDeep})`
+      : "#fff"};
+  color: ${({ $active }) => ($active ? "#fff" : "inherit")};
+  box-shadow: ${({ $active }) =>
+    $active ? "0 20px 40px -20px rgba(37, 99, 235, 0.6)" : "none"};
+  ${cardHover}
+
+  h3 {
+    margin: 16px 0 10px;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.375;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: ${({ $active }) => ($active ? 500 : 400)};
+    color: ${({ $active }) => ($active ? "#dbe7ff" : colors.muted)};
+  }
+`;
+
+const StepNum = styled.span<{ $active: boolean }>`
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: ${({ $active }) => ($active ? "#fff" : colors.accentSoft)};
+  color: ${colors.accent};
+  font-size: 15px;
+  font-weight: 700;
+  transition: transform 0.3s ${ease};
+
+  ${Step}:hover & {
+    transform: scale(1.12) rotate(-6deg);
+  }
+`;
+
+/* ---------- Modules ---------- */
+const Module = styled.div`
+  padding: 26px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  transition:
+    transform 0.3s ${ease},
+    background 0.3s ${ease};
+
+  &:hover {
+    transform: translateY(-6px);
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  h3 {
+    margin: 0 0 10px;
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #dbe7ff;
+  }
+`;
+
+/* ---------- Roles ---------- */
+const RoleCard = styled(Card)`
+  padding: 26px 24px;
+  ${cardHover}
+
+  h3 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    font-size: 15px;
+    color: ${colors.muted};
+  }
+`;
+
+/* ---------- Stats ---------- */
+const Stat = styled.div`
+  b {
+    display: block;
+    font-family: ${mono};
+    font-size: 38px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: ${colors.accent};
+  }
+
+  span {
+    display: block;
+    margin-top: 8px;
+    font-size: 15px;
+    color: ${colors.muted};
+  }
+`;
+
+/* ---------- Trust ---------- */
+const TrustCard = styled(Card)`
+  padding: 32px;
+  ${cardHover}
+
+  h3 {
+    margin: 0 0 14px;
+    font-size: 27px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+    font-size: 15px;
+    color: ${colors.muted};
+  }
+`;
+
+const Check = styled.span`
+  font-weight: 700;
+  color: ${colors.accent};
+`;
+
+const Dot = styled.span`
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: ${colors.accent};
+`;
+
+const ToolsTitle = styled.h3`
+  margin: 96px 0 22px;
+  font-size: 26px;
+  font-weight: 600;
+`;
+
+const Chips = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+`;
+
+const Chip = styled.span<{ $soon?: boolean }>`
+  padding: 10px 16px;
+  border: 1px ${({ $soon }) => ($soon ? "dashed" : "solid")} ${colors.border};
+  border-radius: 999px;
+  background: ${({ $soon }) => ($soon ? "transparent" : "#fff")};
+  color: ${({ $soon }) => ($soon ? colors.muted : "inherit")};
+  font-size: 15px;
+  font-weight: ${({ $soon }) => ($soon ? 400 : 500)};
+  transition:
+    transform 0.25s ${ease},
+    border-color 0.25s,
+    color 0.25s;
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: ${colors.accent};
+    color: ${colors.accent};
+  }
+`;
+
+/* ---------- Pricing ---------- */
+const PriceCard = styled.div<{ $highlight: boolean }>`
+  display: flex;
+  flex-direction: column;
+  padding: 30px 28px;
+  border: ${({ $highlight }) =>
+    $highlight ? `2px solid ${colors.accent}` : `1px solid ${colors.border}`};
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: ${({ $highlight }) =>
+    $highlight ? "0 24px 50px -24px rgba(37, 99, 235, 0.45)" : "none"};
+  ${cardHover}
+
+  h3 {
+    margin: 0;
+    font-size: 21px;
+    font-weight: 600;
+  }
+
+  ul {
+    flex: 1;
+    margin: 22px 0;
+    padding-left: 18px;
+    font-size: 15px;
+    color: ${colors.muted};
+  }
+
+  li {
+    margin: 6px 0;
+  }
+
+  li::marker {
+    color: ${colors.accent};
+  }
+`;
+
+const PriceTop = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const Badge = styled.span`
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: ${colors.accentSoft};
+  color: ${colors.accent};
+  font-size: 12px;
+  font-weight: 600;
+`;
+
+const Who = styled.div`
+  margin: 18px 0 22px;
+  font-size: 15px;
+  color: ${colors.muted};
+`;
+
+const Amount = styled.div`
+  font-family: ${mono};
+  font-size: 32px;
+  font-weight: 600;
+
+  small {
+    margin-left: 20px;
+    font-size: 15px;
+    color: ${colors.muted};
+  }
+`;
+
+/* ---------- About + FAQ ---------- */
+const AboutText = styled.div`
+  font-size: 16px;
+  color: ${colors.muted};
+
+  p {
+    margin: 0 0 16px;
+  }
+`;
+
+const FaqTitle = styled.h3`
+  margin: 80px 0 24px;
+  font-size: 32px;
+  font-weight: 600;
+`;
+
+const FaqItem = styled.details`
+  margin-bottom: 10px;
+  padding: 20px 22px;
+  border: 1px solid ${colors.border};
+  border-radius: 14px;
+  background: #fff;
+
+  &:hover,
+  &[open] {
+    border-color: #bcd0f7;
+  }
+
+  summary {
+    font-size: 17px;
+    font-weight: 600;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary::before {
+    content: "▶";
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 11px;
+    color: ${colors.accent};
+    transition: transform 0.3s ${ease};
+  }
+
+  &[open] summary::before {
+    transform: rotate(90deg);
+  }
+
+  &[open] p {
+    animation: ${fadeUp} 0.4s ${ease};
+  }
+
+  p {
+    margin: 12px 0 0;
+    font-size: 15px;
+    color: ${colors.muted};
+  }
+`;
+
+/* ---------- Contact ---------- */
+const Cta = styled.div`
+  h2 {
+    margin: 0;
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  p {
+    margin: 16px 0 28px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #dbe7ff;
+  }
+
+  @media (max-width: 639px) {
+    h2 {
+      font-size: 28px;
+    }
+  }
+`;
+
+const Contacts = styled.div`
+  display: grid;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #dbe7ff;
+`;
+
+const Form = styled.form`
+  padding: 28px;
+  border-radius: 20px;
+  background: #fff;
+  color: ${colors.text};
+  box-shadow: 0 30px 60px -30px rgba(15, 30, 71, 0.6);
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  input,
+  select {
+    width: 100%;
+    height: 50px;
+    margin-bottom: 18px;
+    padding: 0 14px;
+    border: 1px solid ${colors.border};
+    border-radius: 10px;
+    background: #fff;
+    font-family: inherit;
+    font-size: 16px;
+    outline: none;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+  }
+
+  input:focus,
+  select:focus {
+    border-color: ${colors.accent};
+    box-shadow: 0 0 0 4px ${colors.accentSoft};
+  }
+
+  button {
+    width: 100%;
+    height: 52px;
+    border: 0;
+    border-radius: 10px;
+    background: ${colors.accent};
+    color: #fff;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      transform 0.25s ${ease},
+      background 0.25s,
+      box-shadow 0.25s;
+  }
+
+  button:hover {
+    transform: translateY(-2px);
+    background: ${colors.accentHover};
+    box-shadow: 0 12px 24px -12px rgba(37, 99, 235, 0.7);
+  }
+`;
+
+/* ---------- Footer ---------- */
+const Footer = styled.footer`
+  padding: 56px 0 28px;
+  border-top: 1px solid ${colors.border};
+  background: #fff;
+`;
+
+const FooterTop = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 32px;
+
+  b {
+    font-size: 18px;
+    color: ${colors.accent};
+  }
+
+  p {
+    max-width: 320px;
+    margin: 12px 0 0;
+    font-size: 14px;
+    color: ${colors.muted};
+  }
+`;
+
+const FooterCols = styled.div`
+  display: flex;
+  gap: 48px;
+  font-size: 15px;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  h4 {
+    margin: 0 0 4px;
+    font-weight: 600;
+  }
+
+  a {
+    color: ${colors.muted};
+    transition:
+      color 0.2s,
+      transform 0.2s;
+  }
+
+  a:hover {
+    color: ${colors.accent};
+    transform: translateX(3px);
+  }
+`;
+
+const Copy = styled.div`
+  margin-top: 48px;
+  padding-top: 22px;
+  border-top: 1px solid ${colors.border};
+  font-size: 13px;
+  color: ${colors.muted};
+`;
