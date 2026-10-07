@@ -1,11 +1,7 @@
-import React from 'react'
-
-function Landing() {
+export const Landing = () => {
   return (
     <div>
-      hello
+      
     </div>
   )
 }
-
-export default Landing
